@@ -2,238 +2,193 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>OMEGA-AI // CORE 2026</title>
-    <script src="https://cdnjs.cloudflare.com"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AURA // Personal Hub 2026</title>
     <link href="https://fonts.googleapis.com" rel="stylesheet">
     <style>
         :root {
-            --gold: #ffcc00;
-            --prism: linear-gradient(45deg, #ff0055, #00f2ff, #bc13fe);
-            --bg: #000000;
+            --bg: #050507;
+            --accent: #ffffff;
+            --glass: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.08);
         }
 
         body, html {
             margin: 0; padding: 0; height: 100%;
-            background: var(--bg);
-            color: white;
-            font-family: 'JetBrains Mono', monospace;
+            background-color: var(--bg);
+            color: var(--accent);
+            font-family: 'Inter', sans-serif;
             overflow: hidden;
+            display: flex; align-items: center; justify-content: center;
         }
 
-        canvas { position: fixed; top: 0; left: 0; z-index: 1; filter: contrast(1.2) brightness(1.1); }
-
-        /* Эффект шума и зернистости */
-        .film-grain {
+        /* Живой фон Аура */
+        .aura-bg {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: url('https://upload.wikimedia.org');
-            opacity: 0.05; pointer-events: none; z-index: 100;
+            background: 
+                radial-gradient(circle at 20% 30%, #1a1a2e 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, #0f172a 0%, transparent 40%);
+            filter: blur(80px); z-index: -1;
+            animation: aura-move 15s infinite alternate ease-in-out;
         }
 
-        .interface {
-            position: relative; z-index: 10;
-            display: grid; height: 100vh;
-            grid-template-columns: 350px 1fr 350px;
-            grid-template-rows: 100px 1fr 100px;
-            padding: 30px; box-sizing: border-box;
-            pointer-events: none;
+        @keyframes aura-move {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.1) translate(20px, 20px); }
         }
 
-        /* Стеклянные модули */
-        .glass-module {
-            background: rgba(255, 255, 255, 0.02);
-            backdrop-filter: blur(20px) saturate(180%);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            padding: 20px; position: relative;
-            pointer-events: all;
-            clip-path: polygon(0 0, 100% 0, 100% 85%, 90% 100%, 0 100%);
+        /* Главный контейнер Bento Grid */
+        .container {
+            display: grid;
+            grid-template-columns: repeat(4, 250px);
+            grid-template-rows: repeat(3, 180px);
+            gap: 20px;
+            padding: 20px;
+            max-width: 1100px;
         }
 
-        .header {
-            grid-column: 1 / 4; display: flex; justify-content: space-between; align-items: center;
-            background: transparent; border: none; border-bottom: 1px solid rgba(255,255,255,0.1);
+        .card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 32px;
+            padding: 24px;
+            display: flex; flex-direction: column; justify-content: space-between;
+            transition: all 0.5s cubic-bezier(0.2, 1, 0.3, 1);
         }
 
-        .logo {
-            font-family: 'Unbounded', sans-serif;
-            font-weight: 900; font-size: 28px; letter-spacing: -1px;
-            background: var(--prism); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        .card:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-5px);
         }
 
-        /* Нейронный поток */
-        .neural-stream {
-            font-size: 10px; line-height: 1.5; color: var(--gold);
-            opacity: 0.7; height: 100%; overflow: hidden;
+        /* Стилизация виджетов */
+        .large { grid-column: span 2; grid-row: span 2; }
+        .wide { grid-column: span 2; }
+
+        h2 { font-size: 14px; font-weight: 400; opacity: 0.5; margin: 0; letter-spacing: 1px; }
+        .value { font-size: 48px; font-weight: 200; margin: 10px 0; letter-spacing: -2px; }
+        .sub-text { font-size: 12px; opacity: 0.4; line-height: 1.5; }
+
+        /* Иконка-пульс */
+        .pulse {
+            width: 8px; height: 8px; background: #fff;
+            border-radius: 50%; display: inline-block;
+            box-shadow: 0 0 15px #fff;
+            animation: pulse-anim 2s infinite;
         }
 
-        /* Виджеты */
-        .widget { margin-bottom: 30px; }
-        .label { font-size: 9px; text-transform: uppercase; letter-spacing: 2px; opacity: 0.5; margin-bottom: 5px; }
-        .value { font-size: 18px; font-weight: bold; color: #00f2ff; }
-
-        /* Футер */
-        .footer { grid-column: 1 / 4; display: flex; justify-content: space-between; align-items: center; font-size: 10px; }
-
-        .btn-action {
-            padding: 10px 20px; border: 1px solid var(--gold); color: var(--gold);
-            cursor: pointer; transition: 0.3s; pointer-events: all;
+        @keyframes pulse-anim {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.5); opacity: 0.5; }
+            100% { transform: scale(1); opacity: 1; }
         }
-        .btn-action:hover { background: var(--gold); color: black; box-shadow: 0 0 20px var(--gold); }
+
+        /* Мини-график */
+        .mini-graph {
+            display: flex; align-items: flex-end; gap: 4px; height: 40px; margin-top: 10px;
+        }
+        .graph-bar { width: 100%; background: var(--accent); opacity: 0.2; border-radius: 2px; transition: height 0.5s; }
+
+        /* Кнопка */
+        .action-btn {
+            background: #fff; color: #000; border: none;
+            padding: 12px 24px; border-radius: 100px;
+            font-size: 14px; font-weight: 600; cursor: pointer;
+            align-self: flex-start; margin-top: 20px;
+            transition: 0.3s;
+        }
+        .action-btn:hover { transform: scale(1.05); background: #f0f0f0; }
     </style>
 </head>
 <body>
 
-    <div class="film-grain"></div>
+    <div class="aura-bg"></div>
 
-    <div class="interface">
-        <header class="header">
-            <div class="logo">OMEGA // CORE</div>
-            <div id="timer">STABLE_CONNECT_00:00:00</div>
-            <div class="btn-action" onclick="pulseCore()">DECODE_QUANTUM</div>
-        </header>
+    <main class="container">
+        <!-- Часы (Центральный элемент) -->
+        <div class="card large">
+            <h2>CURRENT_TIME</h2>
+            <div class="value" id="clock">00:00:00</div>
+            <div class="sub-text">Система работает стабильно. <br> Все протоколы синхронизированы с узлом 2026.</div>
+            <button class="action-btn">Открыть консоль</button>
+        </div>
 
-        <!-- Левая панель -->
-        <aside class="glass-module" style="grid-row: 2;">
-            <div class="widget">
-                <div class="label">Neural Complexity</div>
-                <div class="value" id="complexity">1.024 Qbit</div>
+        <!-- Погода / Состояние -->
+        <div class="card">
+            <h2>SYSTEM_HEALTH</h2>
+            <div class="value" style="font-size: 32px;">98%</div>
+            <div class="mini-graph" id="graph">
+                <div class="graph-bar" style="height: 40%"></div>
+                <div class="graph-bar" style="height: 70%"></div>
+                <div class="graph-bar" style="height: 50%"></div>
+                <div class="graph-bar" style="height: 90%"></div>
+                <div class="graph-bar" style="height: 60%"></div>
             </div>
-            <div class="widget">
-                <div class="label">Cognitive Sync</div>
-                <div class="value" style="color: var(--gold);">ACTIVE 99%</div>
-            </div>
-            <hr style="opacity: 0.1">
-            <div class="neural-stream" id="stream"></div>
-        </aside>
+        </div>
 
-        <!-- Пустой центр для 3D -->
-        <div></div>
+        <!-- IP -->
+        <div class="card">
+            <h2>NETWORK_ID</h2>
+            <div id="ip-display" style="font-size: 16px; margin: 15px 0; font-weight: 600;">FETCHING...</div>
+            <div class="sub-text"><span class="pulse"></span> ONLINE</div>
+        </div>
 
-        <!-- Правая панель -->
-        <aside class="glass-module" style="grid-row: 2;">
-            <div class="widget">
-                <div class="label">Environmental DNA</div>
-                <div id="geo-data" style="font-size: 12px;">LOADING...</div>
-            </div>
-            <div class="widget">
-                <div class="label">System Entropy</div>
-                <div id="entropy-bar" style="height: 2px; background: var(--gold); width: 40%; box-shadow: 0 0 10px var(--gold);"></div>
-            </div>
-            <div style="font-size: 10px; margin-top: 50px; opacity: 0.4;">
-                [ WARNING ]<br>
-                HIGH_FREQUENCY_CORE_ACCESS_DETECTED.<br>
-                PROCEED_WITH_CAUTION.
-            </div>
-        </aside>
+        <!-- Локация -->
+        <div class="card wide">
+            <h2>GEOPOSITION</h2>
+            <div id="geo-display" style="font-size: 20px; margin-top: 10px;">Searching node...</div>
+            <div class="sub-text">Автоматическое определение локации по протоколу IPv6.</div>
+        </div>
 
-        <footer class="footer">
-            <div>&copy; 2026 NEURAL_SYSTEMS_INTL</div>
-            <div style="letter-spacing: 5px;">A I _ I S _ W A T C H I N G</div>
-            <div id="fps">FPS: 60.0</div>
-        </footer>
-    </div>
+        <!-- Дополнительный модуль -->
+        <div class="card">
+            <h2>STORAGE</h2>
+            <div class="value" style="font-size: 32px;">1.2<span style="font-size: 14px;">TB</span></div>
+            <div class="sub-text">72% заполнено.</div>
+        </div>
+
+        <!-- Статус ИИ -->
+        <div class="card">
+            <h2>AI_CORE</h2>
+            <div style="margin-top: 15px; font-size: 13px;">
+                Потоки: Активны<br>
+                Обучение: 0.02ms<br>
+                Статус: Ожидание
+            </div>
+        </div>
+    </main>
 
     <script>
-        // 1. 3D СИНГУЛЯРНОСТЬ (УЛУЧШЕННАЯ)
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        document.body.appendChild(renderer.domElement);
-
-        // Создаем Узел Торуса (Torus Knot) из частиц
-        const geometry = new THREE.TorusKnotGeometry(10, 3, 200, 32);
-        const particlesCount = 15000;
-        const pGeo = new THREE.BufferGeometry();
-        const pPos = new Float32Array(particlesCount * 3);
-
-        for(let i=0; i < particlesCount * 3; i++) {
-            pPos[i] = (Math.random() - 0.5) * 40;
+        // Обновление часов
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('clock').innerText = now.toLocaleTimeString('ru-RU', { hour12: false });
         }
-        pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+        setInterval(updateClock, 1000);
+        updateClock();
 
-        const pMat = new THREE.PointsMaterial({
-            size: 0.015,
-            color: 0xffffff,
-            transparent: true,
-            opacity: 0.5,
-            blending: THREE.AdditiveBlending
-        });
-
-        const points = new THREE.Points(pGeo, pMat);
-        scene.add(points);
-
-        // Второе ядро (Геометрическое)
-        const coreGeo = new THREE.IcosahedronGeometry(8, 2);
-        const coreMat = new THREE.MeshBasicMaterial({ color: 0x00f2ff, wireframe: true, transparent: true, opacity: 0.1 });
-        const core = new THREE.Mesh(coreGeo, coreMat);
-        scene.add(core);
-
-        camera.position.z = 30;
-
-        let mouseX = 0, mouseY = 0;
-        document.addEventListener('mousemove', (e) => {
-            mouseX = (e.clientX - window.innerWidth / 2) * 0.05;
-            mouseY = (e.clientY - window.innerHeight / 2) * 0.05;
-        });
-
-        function pulseCore() {
-            // Квантовый взрыв
-            const pos = pGeo.attributes.position.array;
-            for(let i=0; i<particlesCount * 3; i++) {
-                pos[i] *= 1.5;
-            }
-            pGeo.attributes.position.needsUpdate = true;
-            setTimeout(() => {
-                // Плавный возврат (упрощенно)
-                pMat.color.setHex(0xff0055);
-            }, 100);
-        }
-
-        function animate() {
-            requestAnimationFrame(animate);
-            const time = Date.now() * 0.0005;
-
-            points.rotation.y += 0.002;
-            points.rotation.x += 0.001;
-            
-            camera.position.x += (mouseX - camera.position.x) * 0.05;
-            camera.position.y += (-mouseY - camera.position.y) * 0.05;
-            camera.lookAt(scene.position);
-
-            // Анимация цвета
-            pMat.color.setHSL(Math.sin(time * 0.1), 0.8, 0.6);
-            
-            renderer.render(scene, camera);
-        }
-        animate();
-
-        // 2. ДАННЫЕ И ТЕРМИНАЛ
-        const stream = document.getElementById('stream');
+        // Имитация графика
         setInterval(() => {
-            const line = document.createElement('div');
-            line.innerHTML = `> SYNCING_THOUGHT_${Math.random().toString(36).substring(7).toUpperCase()}`;
-            stream.prepend(line);
-            if(stream.childNodes.length > 20) stream.removeChild(stream.lastChild);
-            
-            document.getElementById('complexity').innerText = (Math.random() * 5).toFixed(3) + " Qbit";
-            document.getElementById('entropy-bar').style.width = Math.random() * 100 + "%";
-        }, 800);
+            const bars = document.querySelectorAll('.graph-bar');
+            bars.forEach(bar => {
+                bar.style.height = Math.floor(Math.random() * 90 + 10) + '%';
+                bar.style.opacity = Math.random() * 0.5 + 0.1;
+            });
+        }, 2000);
 
-        // 3. РЕАЛЬНОЕ IP И ГЕО
-        fetch('https://ipapi.co').then(res => res.json()).then(data => {
-            document.getElementById('geo-data').innerHTML = `IP: ${data.ip}<br>NODE: ${data.city}<br>ISP: ${data.org}`;
-        });
-
-        // Таймер
-        setInterval(() => {
-            document.getElementById('timer').innerText = `STABLE_CONNECT_${new Date().toLocaleTimeString()}`;
-        }, 1000);
-
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        });
+        // Получение IP (Реальные данные)
+        fetch('https://ipapi.co')
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('ip-display').innerText = data.ip;
+                document.getElementById('geo-display').innerText = `${data.city}, ${data.country_name}`;
+            })
+            .catch(() => {
+                document.getElementById('ip-display').innerText = "127.0.0.1";
+                document.getElementById('geo-display').innerText = "Local Node";
+            });
     </script>
 </body>
 </html>
